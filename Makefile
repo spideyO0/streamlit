@@ -346,8 +346,10 @@ playwright:
 .PHONY: playwright-performance
 playwright-performance:
 	cd e2e_playwright; \
-	rm -rf ./test-results; \
-	pytest --browser chromium --output ./test-results/ -n 1 --reruns 1 --reruns-delay 1 --rerun-except "Missing snapshot" --durations=5 -r aR -v -k "_performance" --count=10
+	rm -rf ./test-results ./performance-results; \
+	pytest --browser chromium --output ./test-results/ -n 1 --reruns 1 --reruns-delay 1 --rerun-except "Missing snapshot" --durations=5 -r aR -v -k "_performance" --count=10; \
+	cd ..; \
+	python -m scripts.performance.process_test_runs ./e2e_playwright/performance-results
 .PHONY: playwright-custom-components
 # Run playwright custom component E2E tests.
 playwright-custom-components:
