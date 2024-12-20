@@ -427,6 +427,23 @@ export function toSafeNumber(value: any): number | null {
 }
 
 /**
+ * Determines the default mantissa to use for the given number.
+ *
+ * @param value - The number to determine the mantissa for.
+ *
+ * @returns The mantissa to use.
+ */
+function determineDefaultMantissa(value: number): number {
+  if (Math.abs(value) >= 0.0001 || value === 0) {
+    return 4
+  }
+
+  const expStr = value.toExponential()
+  const parts = expStr.split("e")
+  return Math.abs(parseInt(parts[1], 10))
+}
+
+/**
  * Formats the given number to a string based on a provided format or the default format.
  *
  * @param value - The number to format.
@@ -445,16 +462,27 @@ export function formatNumber(
     return ""
   }
 
+  // If no format is provided, use the default format
   if (isNullOrUndefined(format) || format === "") {
-    if (maxPrecision === 0) {
-      // Numbro is unable to format the number with 0 decimals.
-      value = Math.round(value)
+    if (notNullOrUndefined(maxPrecision)) {
+      if (maxPrecision === 0) {
+        // Numbro is unable to format the number with 0 decimals.
+        value = Math.round(value)
+      }
+
+      return numbro(value).format({
+        thousandSeparated: false,
+        mantissa: maxPrecision,
+        trimMantissa: false,
+      })
     }
-    return numbro(value).format(
-      notNullOrUndefined(maxPrecision)
-        ? `0,0.${"0".repeat(maxPrecision)}`
-        : `0,0.[0000]` // If no precision is given, use 4 decimals and hide trailing zeros
-    )
+
+    // If no precision is given, use 4 decimals and hide trailing zeros
+    return numbro(value).format({
+      thousandSeparated: false,
+      mantissa: determineDefaultMantissa(value),
+      trimMantissa: true,
+    })
   }
 
   if (format === "percent") {
@@ -466,6 +494,14 @@ export function formatNumber(
   } else if (["compact", "scientific", "engineering"].includes(format)) {
     return new Intl.NumberFormat(undefined, {
       notation: format as any,
+    }).format(value)
+  } else if (format === "locale") {
+    return new Intl.NumberFormat().format(value)
+  } else if (["usd", "eur"].includes(format)) {
+    return new Intl.NumberFormat(undefined, {
+      style: "currency",
+      currency: format,
+      maximumFractionDigits: 2,
     }).format(value)
   } else if (format === "duration[ns]") {
     return moment.duration(value / (1000 * 1000), "milliseconds").humanize()
