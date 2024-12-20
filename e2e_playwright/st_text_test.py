@@ -19,7 +19,7 @@ from e2e_playwright.shared.app_utils import check_top_level_class, expect_help_t
 
 
 def test_st_text_rendering(app: Page, assert_snapshot: ImageCompareFunction):
-    assert_snapshot(app.get_by_test_id("stText"))
+    assert_snapshot(app.get_by_test_id("stVerticalBlock"), name="st_text-rendering")
 
 
 def test_st_text_shows_correct_text(app: Page):
