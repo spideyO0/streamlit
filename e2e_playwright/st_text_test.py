@@ -18,6 +18,10 @@ from e2e_playwright.conftest import ImageCompareFunction
 from e2e_playwright.shared.app_utils import check_top_level_class, expect_help_tooltip
 
 
+def test_st_text_rendering(app: Page, assert_snapshot: ImageCompareFunction):
+    assert_snapshot(app.get_by_test_id("stText"))
+
+
 def test_st_text_shows_correct_text(app: Page):
     expect(app.get_by_test_id("stText").nth(0)).to_have_text("This text is awesome!")
 
