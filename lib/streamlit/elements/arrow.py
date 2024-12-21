@@ -228,7 +228,7 @@ class ArrowMixin:
         width: int | None = None,
         height: int | None = None,
         *,
-        use_container_width: bool = False,
+        use_container_width: bool = True,
         hide_index: bool | None = None,
         column_order: Iterable[str] | None = None,
         column_config: ColumnConfigMappingInput | None = None,
@@ -244,7 +244,7 @@ class ArrowMixin:
         width: int | None = None,
         height: int | None = None,
         *,
-        use_container_width: bool = False,
+        use_container_width: bool = True,
         hide_index: bool | None = None,
         column_order: Iterable[str] | None = None,
         column_config: ColumnConfigMappingInput | None = None,
@@ -260,7 +260,7 @@ class ArrowMixin:
         width: int | None = None,
         height: int | None = None,
         *,
-        use_container_width: bool = False,
+        use_container_width: bool = True,
         hide_index: bool | None = None,
         column_order: Iterable[str] | None = None,
         column_config: ColumnConfigMappingInput | None = None,
@@ -328,10 +328,10 @@ class ArrowMixin:
 
         use_container_width : bool
             Whether to override ``width`` with the width of the parent
-            container. If ``use_container_width`` is ``False`` (default),
-            Streamlit sets the dataframe's width according to ``width``. If
-            ``use_container_width`` is ``True``, Streamlit sets the width of
-            the dataframe to match the width of the parent container.
+            container. If ``use_container_width`` is ``True`` (default),
+            Streamlit sets the width of the dataframe to match the width of
+            the parent container. If ``use_container_width`` is ``False``,
+            Streamlit sets the dataframe's width according to ``width``.
 
         hide_index : bool or None
             Whether to hide the index column(s). If ``hide_index`` is ``None``
