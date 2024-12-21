@@ -82,12 +82,12 @@ barley_chart = (
 )
 
 st.write("Grouped Bar Chart with default theme:")
-st.altair_chart(barley_chart, theme=None)
+st.altair_chart(barley_chart, theme=None, use_container_width=False)
 
 st.write("Grouped Bar Chart with streamlit theme:")
-st.altair_chart(barley_chart, theme="streamlit")
+st.altair_chart(barley_chart, theme="streamlit", use_container_width=False)
 
-st.write("Chart with use_container_width used")
+st.write("Combined chart with use_container_width=True (note that this doesn't work well)")
 st.altair_chart(barley_chart, theme=None, use_container_width=True)
 
 st.write("Layered chart")
