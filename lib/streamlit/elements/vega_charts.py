@@ -1467,7 +1467,7 @@ class VegaChartsMixin:
         self,
         altair_chart: alt.Chart,
         *,
-        use_container_width: bool = False,
+        use_container_width: bool = True,
         theme: Literal["streamlit"] | None = "streamlit",
         key: Key | None = None,
         on_select: Literal["ignore"],  # No default value here to make it work with mypy
@@ -1479,7 +1479,7 @@ class VegaChartsMixin:
         self,
         altair_chart: alt.Chart,
         *,
-        use_container_width: bool = False,
+        use_container_width: bool = True,
         theme: Literal["streamlit"] | None = "streamlit",
         key: Key | None = None,
         on_select: Literal["rerun"] | WidgetCallback = "rerun",
@@ -1491,7 +1491,7 @@ class VegaChartsMixin:
         self,
         altair_chart: alt.Chart,
         *,
-        use_container_width: bool = False,
+        use_container_width: bool = True,
         theme: Literal["streamlit"] | None = "streamlit",
         key: Key | None = None,
         on_select: Literal["rerun", "ignore"] | WidgetCallback = "ignore",
@@ -1512,11 +1512,11 @@ class VegaChartsMixin:
 
         use_container_width : bool
             Whether to override the figure's native width with the width of
-            the parent container. If ``use_container_width`` is ``False``
-            (default), Streamlit sets the width of the chart to fit its contents
-            according to the plotting library, up to the width of the parent
-            container. If ``use_container_width`` is ``True``, Streamlit sets
-            the width of the figure to match the width of the parent container.
+            the parent container. If ``use_container_width`` is ``True`` (default),
+            Streamlit sets the width of the figure to match the width of the parent
+            container. If ``use_container_width`` is ``False``, Streamlit sets
+            the width of the chart to fit its contents according to the plotting
+            library, up to the width of the parent container.
 
         theme : "streamlit" or None
             The theme of the chart. If ``theme`` is ``"streamlit"`` (default),
