@@ -68,7 +68,7 @@ if not (major == "4" and minor < "2"):
     )
 
     st.write("Pie Chart with more than 4 Legend items")
-    st.altair_chart(chart, theme="streamlit")
+    st.altair_chart(chart, theme="streamlit", use_container_width=False)
 
 # taken from vega_datasets barley example
 barley = alt.UrlData(
