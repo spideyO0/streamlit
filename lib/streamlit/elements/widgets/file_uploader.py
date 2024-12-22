@@ -262,7 +262,7 @@ class FileUploaderMixin:
             .. |st.markdown| replace:: ``st.markdown``
             .. _st.markdown: https://docs.streamlit.io/develop/api-reference/text/st.markdown
 
-        type : str or list of str or None
+        type : str, list of str, or None
             Array of allowed extensions. ['png', 'jpg']
             The default is None, which means all extensions are allowed.
 

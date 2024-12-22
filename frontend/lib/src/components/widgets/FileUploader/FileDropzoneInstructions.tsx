@@ -52,7 +52,7 @@ const FileDropzoneInstructions = ({
         {`Limit ${getSizeDisplay(maxSizeBytes, FileSize.Byte, 0)} per file`}
         {acceptedExtensions.length
           ? ` • ${acceptedExtensions
-              .map(ext => ext.replace(/^\./, "").toUpperCase())
+              .map(ext => ext.replace(/^\.|\/\*$/g, "").toUpperCase())
               .join(", ")}`
           : null}
       </Small>
