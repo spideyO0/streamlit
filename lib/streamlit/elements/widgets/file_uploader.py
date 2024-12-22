@@ -263,8 +263,15 @@ class FileUploaderMixin:
             .. _st.markdown: https://docs.streamlit.io/develop/api-reference/text/st.markdown
 
         type : str, list of str, or None
-            Array of allowed extensions. ['png', 'jpg']
-            The default is None, which means all extensions are allowed.
+            The allowed file types. This can be one of the following:
+
+            - None, which allows all file types to be uploaded.
+            - ``"image"``, ``"audio"``, ``"video"``, or ``"text"`` to allow all files of
+              that type. Note that different browsers may allow different file
+              extensions for these types.
+            - A single file extension, e.g. ``"png"`` or ``".png"``.
+            - A list of any of the above, e.g. ``["png", "jpg"]`` or
+              ``["image", ".csv"]``.
 
         accept_multiple_files : bool
             If True, allows the user to upload multiple files at the same time,
