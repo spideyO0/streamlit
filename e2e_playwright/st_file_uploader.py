@@ -15,7 +15,7 @@
 import streamlit as st
 from streamlit import runtime
 
-single_file = st.file_uploader("Drop a file:", type=["txt"], key="single")
+single_file = st.file_uploader("Drop a file:", type=["txt", "image"], key="single")
 if single_file is None:
     st.text("No upload")
 else:
