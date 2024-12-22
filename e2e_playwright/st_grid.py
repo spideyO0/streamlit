@@ -56,7 +56,7 @@ with st.expander("3x3 image grid", expanded=True):
 # Grid with charts
 st.header("Chart grid")
 with st.expander("2x2 chart grid", expanded=True):
-    cells = st.grid([2, 2], gap="medium", border=True)
+    cells = st.grid(2, gap="medium", border=True)
 
     # Sample data
     chart_data = np.random.randn(20, 3)
@@ -65,3 +65,31 @@ with st.expander("2x2 chart grid", expanded=True):
     cells[1].bar_chart(chart_data)
     cells[2].area_chart(chart_data)
     cells[3].scatter_chart(chart_data)
+
+# Grid in sidebar
+st.header("Grid in sidebar")
+with st.sidebar:
+    st.write("Sidebar grid example:")
+    cells = st.grid(2, gap="small", border=True)
+    cells[0].button("Sidebar Button 1", use_container_width=True)
+    cells[1].button("Sidebar Button 2", use_container_width=True)
+    cells[2].text_input("Sidebar Input 1")
+    cells[3].text_input("Sidebar Input 2")
+
+# Grid in columns
+st.header("Grid in columns")
+col1, col2 = st.columns(2)
+
+with col1:
+    st.write("Left column grid:")
+    cells = st.grid(2, gap="small")
+    cells[0].metric("Value 1", "100", "+10")
+    cells[1].metric("Value 2", "200", "-5")
+    cells[2].metric("Value 3", "300", "+15")
+    cells[3].metric("Value 4", "400", "-8")
+
+with col2:
+    st.write("Right column grid:")
+    cells = st.grid(2, gap="small")
+    for i, cell in enumerate(cells):
+        cell.write(f"Nested cell {i+1}")
