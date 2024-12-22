@@ -58,12 +58,19 @@ class FileUploaderTest(DeltaGeneratorTestCase):
         c = self.get_delta_from_queue().new_element.file_uploader
         self.assertEqual(c.type, [".png"])
 
-    def test_multiple_types(self):
-        """Test that it can be called using an array for type parameter."""
-        st.file_uploader("the label", type=["png", ".svg", "foo"])
+    def test_single_mime_type(self):
+        """Test that it can be called using a mime type string for type parameter."""
+        st.file_uploader("the label", type="image")
 
         c = self.get_delta_from_queue().new_element.file_uploader
-        self.assertEqual(c.type, [".png", ".svg", ".foo"])
+        self.assertEqual(c.type, ["image/*"])
+
+    def test_multiple_types(self):
+        """Test that it can be called using an array for type parameter."""
+        st.file_uploader("the label", type=["png", ".svg", "foo", "audio"])
+
+        c = self.get_delta_from_queue().new_element.file_uploader
+        self.assertEqual(c.type, [".png", ".svg", ".foo", "audio/*"])
 
     def test_jpg_expansion(self):
         """Test that it adds jpg when passing in just jpeg (and vice versa)."""
