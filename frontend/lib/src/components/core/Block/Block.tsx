@@ -52,6 +52,8 @@ import {
 import ElementNodeRenderer from "./ElementNodeRenderer"
 import {
   StyledColumn,
+  StyledGrid,
+  StyledGridCell,
   StyledHorizontalBlock,
   StyledVerticalBlock,
   StyledVerticalBlockBorderWrapper,
@@ -182,6 +184,40 @@ const BlockNodeRenderer = (props: BlockPropsWithWidth): ReactElement => {
       >
         {child}
       </StyledColumn>
+    )
+  }
+
+  if (node.deltaBlock.type === "grid") {
+    const grid = node.deltaBlock.grid
+    return (
+      <StyledGrid
+        rows={grid?.rows ?? 0}
+        columns={grid?.columns ?? 0}
+        gap={grid?.gap ?? "small"}
+        showBorder={grid?.showBorder ?? false}
+        className="stGrid"
+        data-testid="stGrid"
+      >
+        <ChildRenderer {...props} />
+      </StyledGrid>
+    )
+  }
+
+  if (node.deltaBlock.type === "gridCell") {
+    const cell = node.deltaBlock.gridCell
+    return (
+      <StyledGridCell
+        row={cell?.row ?? 0}
+        column={cell?.column ?? 0}
+        weight={cell?.weight ?? 1}
+        gap={cell?.gap ?? "small"}
+        verticalAlignment={cell?.verticalAlignment ?? undefined}
+        showBorder={cell?.showBorder ?? false}
+        className="stGridCell"
+        data-testid="stGridCell"
+      >
+        <VerticalBlock {...props} />
+      </StyledGridCell>
     )
   }
 

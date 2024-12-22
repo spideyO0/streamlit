@@ -31,11 +31,14 @@ message Block {
     ChatMessage chat_message = 9;
     Popover popover = 10;
     Dialog dialog = 11;
+    Grid grid = 13;
+    GridCell grid_cell = 14;
   }
 
   bool allow_empty = 8;
   optional string id = 12;
 
+  // Next ID: 15
   message Vertical {
     bool border = 1;
     // Height of the container, activates scrolling
@@ -99,7 +102,6 @@ message Block {
     string icon = 5;
   }
 
-
   message ChatMessage {
     enum AvatarType {
       IMAGE = 0;
@@ -112,5 +114,20 @@ message Block {
     AvatarType avatar_type = 3;
   }
 
-  // Next ID: 13
+  message Grid {
+    uint32 rows = 1;
+    uint32 columns = 2;
+    string gap = 3;
+    Column.VerticalAlignment vertical_alignment = 4;
+    bool show_border = 5;
+  }
+
+  message GridCell {
+    uint32 row = 1;
+    uint32 column = 2;
+    double weight = 3;
+    string gap = 4;
+    Column.VerticalAlignment vertical_alignment = 5;
+    bool show_border = 6;
+  }
 }

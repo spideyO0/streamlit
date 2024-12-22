@@ -205,3 +205,82 @@ export const StyledVerticalBlockBorderWrapper =
       }),
     })
   )
+
+interface StyledGridProps {
+  rows: number
+  columns: number
+  gap: string
+  showBorder: boolean
+}
+
+export const StyledGrid = styled.div<StyledGridProps>(
+  ({ theme, columns, gap, showBorder }) => {
+    const gapWidth = translateGapWidth(gap, theme)
+    const minCellWidth = 150 // Minimum width for cells
+    const columnWidth = `calc((100% - (${
+      columns - 1
+    } * ${gapWidth})) / ${columns})`
+
+    return {
+      display: "grid",
+      gridTemplateColumns: `repeat(auto-fill, minmax(max(${minCellWidth}px, ${columnWidth}), 1fr))`,
+      gap: gapWidth,
+      width: "100%",
+
+      // Ensure grid items maintain a reasonable size ratio
+      "& > *": {
+        minHeight: "50px",
+        flex: 1,
+      },
+
+      ...(showBorder && {
+        border: `${theme.sizes.borderWidth} solid ${theme.colors.borderColor}`,
+        borderRadius: theme.radii.default,
+        padding: theme.spacing.lg,
+      }),
+    }
+  }
+)
+
+interface StyledGridCellProps {
+  row: number
+  column: number
+  weight: number
+  gap: string
+  showBorder: boolean
+  verticalAlignment?: BlockProto.Column.VerticalAlignment
+}
+
+export const StyledGridCell = styled.div<StyledGridCellProps>(
+  ({ theme, showBorder, verticalAlignment }) => {
+    const { VerticalAlignment } = BlockProto.Column
+
+    return {
+      minWidth: 0,
+      display: "flex",
+      flexDirection: "column",
+      height: "100%", // Fill the grid cell height
+
+      // Special handling for different content types
+      ":has(img)": {
+        aspectRatio: "1",
+      },
+
+      ":has(.element-container)": {
+        height: "auto", // Let content determine height for widgets
+      },
+
+      ...(verticalAlignment === VerticalAlignment.BOTTOM && {
+        justifyContent: "flex-end",
+      }),
+      ...(verticalAlignment === VerticalAlignment.CENTER && {
+        justifyContent: "center",
+      }),
+      ...(showBorder && {
+        border: `${theme.sizes.borderWidth} solid ${theme.colors.borderColor}`,
+        borderRadius: theme.radii.default,
+        padding: `calc(${theme.spacing.lg} - ${theme.sizes.borderWidth})`,
+      }),
+    }
+  }
+)
