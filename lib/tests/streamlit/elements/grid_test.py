@@ -1,110 +1,154 @@
 """Unit tests for st.grid."""
 
-from parameterized import parameterized
+import pytest
 
+from streamlit.elements.lib.grid_container import GridContainer
 from streamlit.errors import StreamlitAPIException
 from streamlit.proto.Block_pb2 import Block as BlockProto
 from tests.delta_generator_test_case import DeltaGeneratorTestCase
 
 
 class GridTest(DeltaGeneratorTestCase):
-    """Test st.grid."""
-
-    def test_basic_grid(self):
-        """Test that basic grid works with integer spec."""
-        cells = self.dg.grid(2)  # 2x2 grid
-
-        all_deltas = self.get_all_deltas_from_queue()
-
-        # Should create 1 grid container and 4 cells
-        self.assertEqual(len(all_deltas), 5)
-
-        grid_proto = all_deltas[0].add_block
-        self.assertEqual(grid_proto.grid.rows, 2)
-        self.assertEqual(grid_proto.grid.columns, 2)
-        self.assertEqual(grid_proto.grid.gap, "small")
-        self.assertEqual(
-            grid_proto.grid.vertical_alignment, BlockProto.Column.VerticalAlignment.TOP
-        )
-        self.assertFalse(grid_proto.grid.show_border)
-
-        # Check cells
-        for i, cell in enumerate(all_deltas[1:]):
-            cell_proto = cell.add_block.grid_cell
-            self.assertEqual(cell_proto.row, i // 2)
-            self.assertEqual(cell_proto.column, i % 2)
-            self.assertEqual(cell_proto.weight, 0.5)  # 1/2 for equal width
-            self.assertEqual(cell_proto.gap, "small")
-            self.assertEqual(
-                cell_proto.vertical_alignment, BlockProto.Column.VerticalAlignment.TOP
-            )
-            self.assertFalse(cell_proto.show_border)
-
-    def test_tuple_spec(self):
-        """Test grid with tuple spec for rows and columns."""
-        cells = self.dg.grid((3, 2))  # 3x2 grid
-
-        all_deltas = self.get_all_deltas_from_queue()
-
-        grid_proto = all_deltas[0].add_block
-        self.assertEqual(grid_proto.grid.rows, 3)
-        self.assertEqual(grid_proto.grid.columns, 2)
-
-    def test_list_spec(self):
-        """Test grid with list spec for custom column widths."""
-        cells = self.dg.grid([2, 1, 1])  # Single row, 3 columns with weights
-
-        all_deltas = self.get_all_deltas_from_queue()
-
-        grid_proto = all_deltas[0].add_block
-        self.assertEqual(grid_proto.grid.rows, 1)
-        self.assertEqual(grid_proto.grid.columns, 3)
-
-        # Check cell weights
-        weights = [0.5, 0.25, 0.25]  # Normalized weights
-        for i, cell in enumerate(all_deltas[1:]):
-            self.assertEqual(cell.add_block.grid_cell.weight, weights[i])
+    """Test ability to create grid layouts."""
 
     def test_invalid_spec(self):
-        """Test that invalid specs raise appropriate exceptions."""
-        with self.assertRaises(StreamlitAPIException):
-            self.dg.grid("invalid")
-
-        with self.assertRaises(StreamlitAPIException):
-            self.dg.grid(0)  # Zero dimensions
-
-        with self.assertRaises(StreamlitAPIException):
-            self.dg.grid(-1)  # Negative dimensions
-
-        with self.assertRaises(StreamlitAPIException):
-            self.dg.grid(13)  # Too large (exceeds 144 cells)
-
-    @parameterized.expand(
-        [
-            ("small", BlockProto.Column.VerticalAlignment.TOP, False),
-            ("medium", BlockProto.Column.VerticalAlignment.CENTER, True),
-            ("large", BlockProto.Column.VerticalAlignment.BOTTOM, False),
-        ]
-    )
-    def test_grid_options(self, gap, vertical_alignment, border):
-        """Test grid with various options."""
-        cells = self.dg.grid(
-            2,
-            gap=gap,
-            vertical_alignment=vertical_alignment.name.lower(),
-            border=border,
+        """Test that invalid grid specs raise exceptions."""
+        with pytest.raises(StreamlitAPIException) as exc_info:
+            self.dg.grid("not a number")
+        assert "Grid spec must be an int or a list of column weights" in str(
+            exc_info.value
         )
 
-        all_deltas = self.get_all_deltas_from_queue()
-        grid_proto = all_deltas[0].add_block
+        with pytest.raises(StreamlitAPIException) as exc_info:
+            self.dg.grid(0)
+        assert "Grid columns must be a positive integer" in str(exc_info.value)
 
-        self.assertEqual(grid_proto.grid.gap, gap)
-        self.assertEqual(grid_proto.grid.vertical_alignment, vertical_alignment)
-        self.assertEqual(grid_proto.grid.show_border, border)
+        with pytest.raises(StreamlitAPIException) as exc_info:
+            self.dg.grid([])
+        assert "Grid spec must not be empty" in str(exc_info.value)
 
-        # Check that options are propagated to cells
-        for cell in all_deltas[1:]:
-            cell_proto = cell.add_block.grid_cell
-            self.assertEqual(cell_proto.gap, gap)
-            self.assertEqual(cell_proto.vertical_alignment, vertical_alignment)
-            self.assertEqual(cell_proto.show_border, border)
+        with pytest.raises(StreamlitAPIException) as exc_info:
+            self.dg.grid([0, 1, 2])
+        assert "Grid column weights must be positive numbers" in str(exc_info.value)
+
+    def test_equal_width_columns(self):
+        """Test grid with equal width columns."""
+        grid = self.dg.grid(3)
+        assert isinstance(grid, GridContainer)
+
+        proto = self._get_last_proto()
+        assert proto.grid.columns == 3
+        assert proto.grid.gap == "small"
+        assert proto.grid.vertical_alignment == BlockProto.Column.VerticalAlignment.TOP
+        assert not proto.grid.show_border
+
+    def test_custom_column_widths(self):
+        """Test grid with custom column widths."""
+        grid = self.dg.grid([2, 1, 1])
+        assert isinstance(grid, GridContainer)
+
+        proto = self._get_last_proto()
+        assert proto.grid.columns == 3
+        assert proto.grid.gap == "small"
+        assert proto.grid.vertical_alignment == BlockProto.Column.VerticalAlignment.TOP
+        assert not proto.grid.show_border
+
+    def test_styling_options(self):
+        """Test grid with styling options."""
+        grid = self.dg.grid(2, gap="medium", vertical_alignment="center", border=True)
+        assert isinstance(grid, GridContainer)
+
+        proto = self._get_last_proto()
+        assert proto.grid.columns == 2
+        assert proto.grid.gap == "medium"
+        assert (
+            proto.grid.vertical_alignment == BlockProto.Column.VerticalAlignment.CENTER
+        )
+        assert proto.grid.show_border
+
+    def test_grid_cell_creation(self):
+        """Test that grid cells are created correctly."""
+        grid = self.dg.grid(2)
+
+        # Create first cell
+        cell1 = grid._create_cell()
+        proto1 = self._get_last_proto()
+        assert proto1.grid_cell.column == 0
+        assert proto1.grid_cell.row == 0
+        assert proto1.grid_cell.weight == 0.5
+
+        # Create second cell
+        cell2 = grid._create_cell()
+        proto2 = self._get_last_proto()
+        assert proto2.grid_cell.column == 1
+        assert proto2.grid_cell.row == 0
+        assert proto2.grid_cell.weight == 0.5
+
+        # Create third cell (new row)
+        cell3 = grid._create_cell()
+        proto3 = self._get_last_proto()
+        assert proto3.grid_cell.column == 0
+        assert proto3.grid_cell.row == 1
+        assert proto3.grid_cell.weight == 0.5
+
+    def test_grid_cell_weights(self):
+        """Test that grid cells have correct weights with custom column widths."""
+        grid = self.dg.grid([2, 1, 1])
+
+        # Create cells
+        cell1 = grid._create_cell()
+        proto1 = self._get_last_proto()
+        assert proto1.grid_cell.weight == 0.5  # 2/4
+
+        cell2 = grid._create_cell()
+        proto2 = self._get_last_proto()
+        assert proto2.grid_cell.weight == 0.25  # 1/4
+
+        cell3 = grid._create_cell()
+        proto3 = self._get_last_proto()
+        assert proto3.grid_cell.weight == 0.25  # 1/4
+
+        # Next row should repeat the same weights
+        cell4 = grid._create_cell()
+        proto4 = self._get_last_proto()
+        assert proto4.grid_cell.weight == 0.5
+
+    def test_context_manager(self):
+        """Test that grid works as a context manager."""
+        with self.dg.grid(2) as grid:
+            grid.write("Cell 1")
+            grid.write("Cell 2")
+            grid.write("Cell 3")
+
+        # Should have created 3 cells
+        protos = self._get_all_protos()
+        assert len(protos) == 4  # grid + 3 cells
+
+        # Check grid proto
+        grid_proto = protos[0]
+        assert grid_proto.grid.columns == 2
+
+        # Check cell protos
+        for i, proto in enumerate(protos[1:]):
+            assert proto.grid_cell.column == i % 2
+            assert proto.grid_cell.row == i // 2
+            assert proto.grid_cell.weight == 0.5
+
+    def test_method_chaining(self):
+        """Test that grid supports method chaining."""
+        grid = self.dg.grid(2)
+        grid.write("Cell 1").write("Cell 2").write("Cell 3")
+
+        # Should have created 3 cells
+        protos = self._get_all_protos()
+        assert len(protos) == 4  # grid + 3 cells
+
+        # Check grid proto
+        grid_proto = protos[0]
+        assert grid_proto.grid.columns == 2
+
+        # Check cell protos
+        for i, proto in enumerate(protos[1:]):
+            assert proto.grid_cell.column == i % 2
+            assert proto.grid_cell.row == i // 2
+            assert proto.grid_cell.weight == 0.5

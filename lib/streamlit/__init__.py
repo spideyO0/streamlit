@@ -79,12 +79,14 @@ from streamlit.elements.lib.mutable_status_container import (
     StatusContainer as _StatusContainer,
 )
 from streamlit.elements.lib.dialog import Dialog as _Dialog
+from streamlit.elements.lib.grid_container import GridContainer as _GridContainer
 
 # instantiate the DeltaGeneratorSingleton
 _dg_singleton = _DeltaGeneratorSingleton(
     delta_generator_cls=_DeltaGenerator,
     status_container_cls=_StatusContainer,
     dialog_container_cls=_Dialog,
+    grid_container_cls=_GridContainer,
 )
 _main = _dg_singleton._main_dg
 sidebar = _dg_singleton._sidebar_dg

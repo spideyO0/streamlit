@@ -207,7 +207,6 @@ export const StyledVerticalBlockBorderWrapper =
   )
 
 interface StyledGridProps {
-  rows: number
   columns: number
   gap: string
   showBorder: boolean
@@ -243,8 +242,6 @@ export const StyledGrid = styled.div<StyledGridProps>(
 )
 
 interface StyledGridCellProps {
-  row: number
-  column: number
   weight: number
   gap: string
   showBorder: boolean

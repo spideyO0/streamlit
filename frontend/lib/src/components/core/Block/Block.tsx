@@ -191,35 +191,53 @@ const BlockNodeRenderer = (props: BlockPropsWithWidth): ReactElement => {
     const grid = node.deltaBlock.grid
     return (
       <StyledGrid
-        rows={grid?.rows ?? 0}
         columns={grid?.columns ?? 0}
         gap={grid?.gap ?? "small"}
         showBorder={grid?.showBorder ?? false}
         className="stGrid"
         data-testid="stGrid"
       >
-        <ChildRenderer {...props} />
+        {node.children.map((child, index) => {
+          return (
+            <StyledGridCell
+              key={index}
+              row={Math.floor(index / (grid?.columns ?? 1))}
+              column={index % (grid?.columns ?? 1)}
+              weight={1 / (grid?.columns ?? 1)}
+              gap={grid?.gap ?? "small"}
+              verticalAlignment={
+                grid?.verticalAlignment ??
+                BlockProto.Column.VerticalAlignment.TOP
+              }
+              showBorder={grid?.showBorder ?? false}
+              className="stGridCell"
+              data-testid="stGridCell"
+            >
+              <VerticalBlock {...props} />
+            </StyledGridCell>
+          )
+        })}
       </StyledGrid>
     )
   }
 
-  if (node.deltaBlock.type === "gridCell") {
-    const cell = node.deltaBlock.gridCell
-    return (
-      <StyledGridCell
-        row={cell?.row ?? 0}
-        column={cell?.column ?? 0}
-        weight={cell?.weight ?? 1}
-        gap={cell?.gap ?? "small"}
-        verticalAlignment={cell?.verticalAlignment ?? undefined}
-        showBorder={cell?.showBorder ?? false}
-        className="stGridCell"
-        data-testid="stGridCell"
-      >
-        <VerticalBlock {...props} />
-      </StyledGridCell>
-    )
-  }
+  // if (node.deltaBlock.type === "gridCell") {
+  //   const cell = node.deltaBlock.gridCell
+  //   return (
+  //     <StyledGridCell
+  //       row={cell?.row ?? 0}
+  //       column={cell?.column ?? 0}
+  //       weight={cell?.weight ?? 1}
+  //       gap={cell?.gap ?? "small"}
+  //       verticalAlignment={cell?.verticalAlignment ?? undefined}
+  //       showBorder={cell?.showBorder ?? false}
+  //       className="stGridCell"
+  //       data-testid="stGridCell"
+  //     >
+  //       <VerticalBlock {...props} />
+  //     </StyledGridCell>
+  //   )
+  // }
 
   if (node.deltaBlock.tabContainer) {
     const renderTabContent = (

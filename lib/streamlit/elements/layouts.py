@@ -33,6 +33,7 @@ from streamlit.string_util import validate_icon_or_emoji
 if TYPE_CHECKING:
     from streamlit.delta_generator import DeltaGenerator
     from streamlit.elements.lib.dialog import Dialog
+    from streamlit.elements.lib.grid_container import GridContainer
     from streamlit.elements.lib.mutable_status_container import StatusContainer
 
 SpecType: TypeAlias = Union[int, Sequence[Union[int, float]]]
@@ -876,20 +877,19 @@ class LayoutsMixin:
     @gather_metrics("grid")
     def grid(
         self,
-        spec: int | Sequence[int | float] | tuple[int, int],
+        spec: int | Sequence[int | float],
         *,
         gap: Literal["small", "medium", "large"] = "small",
         vertical_alignment: Literal["top", "center", "bottom"] = "top",
         border: bool = False,
-    ) -> list[DeltaGenerator]:
+    ) -> GridContainer:
         """Create a grid layout of elements.
 
         Parameters
         ----------
-        spec : int or list of numbers or tuple of (rows, columns)
-            If int: Creates a square grid with that many columns and rows
+        spec : int or list of numbers
+            If int: Creates a grid with that many columns of equal width
             If list: Creates a single row with columns of specified relative widths
-            If tuple: Creates a grid with specified number of rows and columns of equal width
 
         gap : "small" | "medium" | "large"
             The gap size between grid items. Defaults to "small".
@@ -902,87 +902,56 @@ class LayoutsMixin:
 
         Returns
         -------
-        list[DeltaGenerator]
-            A flattened list of DeltaGenerator objects that can be used as containers.
-            The length will be rows * columns for tuple spec, or len(spec) for list spec.
+        GridContainer
+            A container object that can be used to add elements to the grid.
+            Elements are added to cells from left to right, top to bottom.
+            New rows are created automatically when needed.
 
         Example
         -------
-        >>> # Create a 2x2 grid
-        >>> cells = st.grid((2, 2))
-        >>> cells[0].write("Top left")
-        >>> cells[1].write("Top right")
-        >>> cells[2].write("Bottom left")
-        >>> cells[3].write("Bottom right")
+        >>> # Create a grid with 3 columns of equal width
+        >>> grid = st.grid(3)
+        >>> with grid:
+        >>>     st.write("Cell 1")  # First cell
+        >>>     st.write("Cell 2")  # Second cell
+        >>>     st.write("Cell 3")  # Third cell
+        >>>     st.write("Cell 4")  # Fourth cell (new row)
+        >>>
+        >>> # Create a grid with custom column widths
+        >>> grid = st.grid([2, 1, 1])  # 2:1:1 ratio
+        >>> grid.write("Wide column")
+        >>> grid.write("Narrow column")
+        >>> grid.write("Narrow column")
         """
-        # Validate and normalize the spec
+        # Validate spec
         if isinstance(spec, (int, float)):
-            rows = int(spec)
-            cols = int(spec)
+            if spec < 1:
+                raise StreamlitAPIException("Grid columns must be a positive integer")
+            spec = int(spec)
         elif isinstance(spec, (list, tuple)):
-            if len(spec) == 2 and all(isinstance(x, (int, float)) for x in spec):
-                rows, cols = map(int, spec)
-            else:
-                # Single row with custom column widths
-                rows = 1
-                cols = len(spec)
-                weights = [float(w) for w in spec]
+            if not spec:
+                raise StreamlitAPIException("Grid spec must not be empty")
+            if not all(isinstance(x, (int, float)) and x > 0 for x in spec):
+                raise StreamlitAPIException(
+                    "Grid column weights must be positive numbers"
+                )
         else:
             raise StreamlitAPIException(
-                "Grid spec must be an int, a tuple of (rows, columns), or a list of column weights"
+                "Grid spec must be an int or a list of column weights"
             )
-
-        # Validate grid dimensions
-        if rows < 1 or cols < 1:
-            raise StreamlitAPIException("Grid dimensions must be positive integers")
-        if rows * cols > 144:  # 12x12 max grid size
-            raise StreamlitAPIException("Grid size exceeds maximum allowed (144 cells)")
 
         # Validate gap
         if gap not in ["small", "medium", "large"]:
             raise StreamlitInvalidColumnGapError(gap)
 
         # Validate vertical alignment
-        vertical_alignment_proto = {
-            "top": BlockProto.Column.VerticalAlignment.TOP,
-            "center": BlockProto.Column.VerticalAlignment.CENTER,
-            "bottom": BlockProto.Column.VerticalAlignment.BOTTOM,
-        }.get(vertical_alignment.lower())
-
-        if vertical_alignment_proto is None:
+        if vertical_alignment not in ["top", "center", "bottom"]:
             raise StreamlitInvalidVerticalAlignmentError(vertical_alignment)
 
-        # Create grid container
-        grid_proto = BlockProto()
-        grid = grid_proto.grid
-        grid.rows = rows
-        grid.columns = cols
-        grid.gap = gap
-        grid.vertical_alignment = vertical_alignment_proto
-        grid.show_border = border
-        grid_proto.allow_empty = True
-
-        grid_container = self.dg._block(grid_proto)
-
-        # Create grid cells
-        cells: list[DeltaGenerator] = []
-        total_weight = sum(weights) if "weights" in locals() else cols
-
-        for i in range(rows):
-            for j in range(cols):
-                cell_proto = BlockProto()
-                cell = cell_proto.grid_cell
-                cell.row = i
-                cell.column = j
-                if "weights" in locals():
-                    cell.weight = weights[j] / total_weight
-                else:
-                    cell.weight = 1.0 / cols
-                cell.gap = gap
-                cell.vertical_alignment = vertical_alignment_proto
-                cell.show_border = border
-                cell_proto.allow_empty = True
-
-                cells.append(grid_container._block(cell_proto))
-
-        return cells
+        return get_dg_singleton_instance().grid_container_cls._create(
+            self.dg,
+            spec,
+            gap=gap,
+            vertical_alignment=vertical_alignment,
+            border=border,
+        )

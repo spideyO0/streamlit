@@ -115,11 +115,14 @@ message Block {
   }
 
   message Grid {
-    uint32 rows = 1;
-    uint32 columns = 2;
-    string gap = 3;
-    Column.VerticalAlignment vertical_alignment = 4;
-    bool show_border = 5;
+    // Number of columns in the grid
+    uint32 columns = 1;
+    // Gap size between grid items ("small", "medium", "large")
+    string gap = 2;
+    // Vertical alignment of content within grid cells
+    Column.VerticalAlignment vertical_alignment = 3;
+    // Whether to show borders around grid cells
+    bool show_border = 4;
   }
 
   message GridCell {
