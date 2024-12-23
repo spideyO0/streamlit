@@ -59,6 +59,11 @@ export const StyledSpinner = styled.div<StyledSpinnerProps>(
   })
 )
 
+export const StyledSpinnerTimer = styled.div(({ theme }) => ({
+  opacity: 0.6,
+  fontSize: theme.fontSizes.sm,
+}))
+
 export const StyledSpinnerContainer = styled.div(({ theme }) => ({
   display: "flex",
   gap: theme.spacing.sm,

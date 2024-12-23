@@ -27,6 +27,7 @@ import {
   StyledSpinner,
   StyledSpinnerContainer,
   ThemedStyledSpinner,
+  StyledSpinnerTimer,
 } from "./styled-components"
 
 export interface SpinnerProps {
@@ -38,6 +39,39 @@ function Spinner({ width, element }: Readonly<SpinnerProps>): ReactElement {
   const { activeTheme } = React.useContext(LibContext)
   const usingCustomTheme = !isPresetTheme(activeTheme)
   const { cache } = element
+  const [elapsedTime, setElapsedTime] = React.useState(0)
+
+  React.useEffect(() => {
+    const timer = setInterval(() => {
+      setElapsedTime(prev => prev + 0.1)
+    }, 100)
+
+    return () => clearInterval(timer)
+  }, [])
+
+  const formatTime = (seconds: number): string => {
+    if (seconds < 0.1) return ""
+
+    const hours = Math.floor(seconds / 3600)
+    const mins = Math.floor((seconds % 3600) / 60)
+    const secs = seconds % 60
+
+    if (hours === 0 && mins === 0) {
+      return `(${secs.toFixed(1)} seconds)`
+    }
+
+    if (hours === 0) {
+      const minText = `${mins} minute${mins === 1 ? "" : "s"}`
+      const secText = secs === 0 ? "" : `, ${secs.toFixed(1)} seconds`
+      return `(${minText}${secText})`
+    }
+
+    const hourText = `${hours} hour${hours === 1 ? "" : "s"}`
+    const minText =
+      mins === 0 ? "" : `, ${mins} minute${mins === 1 ? "" : "s"}`
+    const secText = secs === 0 ? "" : `, ${secs.toFixed(1)} seconds`
+    return `(${hourText}${minText}${secText})`
+  }
 
   return (
     <StyledSpinner
@@ -49,6 +83,7 @@ function Spinner({ width, element }: Readonly<SpinnerProps>): ReactElement {
       <StyledSpinnerContainer>
         <ThemedStyledSpinner usingCustomTheme={usingCustomTheme} />
         <StreamlitMarkdown source={element.text} allowHTML={false} />
+        <StyledSpinnerTimer>{formatTime(elapsedTime)}</StyledSpinnerTimer>
       </StyledSpinnerContainer>
     </StyledSpinner>
   )
