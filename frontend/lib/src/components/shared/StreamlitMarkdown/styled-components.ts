@@ -167,8 +167,6 @@ export const StyledStreamlitMarkdown =
         (isLabel && !largerLabel) || isToast || isCaption
 
       return {
-        overflowX: "auto",
-        overflowY: "hidden",
         fontFamily: theme.genericFonts.bodyFont,
         fontSize: useSmallerFontSize ? theme.fontSizes.sm : theme.fontSizes.md,
         marginBottom: isLabel ? "" : `-${theme.spacing.lg}`,
@@ -180,6 +178,14 @@ export const StyledStreamlitMarkdown =
           isInSidebarOrDialog,
           isCaption
         ),
+
+        // If the markdown content is too wide for the page, make the Markdown block
+        // scroll horizontally. This is required a) for long inline Latex formulas and
+        // b) for long Latex formulas in `st.latex` when `help` is set.
+        // We could also use `"hidden"` here - then it would behave a bit more nicely
+        // but it might cut off some text. 
+        overflowX: "auto",
+        overflowY: "hidden",
 
         p: {
           wordBreak: "break-word",
