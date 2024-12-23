@@ -183,7 +183,7 @@ export const StyledStreamlitMarkdown =
         // scroll horizontally. This is required a) for long inline Latex formulas and
         // b) for long Latex formulas in `st.latex` when `help` is set.
         // We could also use `"hidden"` here - then it would behave a bit more nicely
-        // but it might cut off some text. 
+        // but it might cut off some text.
         overflowX: "auto",
         overflowY: "hidden",
 
