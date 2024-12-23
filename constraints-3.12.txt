@@ -22,7 +22,7 @@ gitdb==4.0.11
 GitPython==3.1.43
 graphviz==0.20.3
 greenlet==3.1.1
-hypothesis==6.122.6
+hypothesis==6.122.7
 identify==2.6.3
 idna==3.10
 iniconfig==2.0.0
@@ -103,7 +103,7 @@ types-click==7.1.8
 types-protobuf==5.29.1.20241207
 types-pytz==2024.2.0.20241221
 types-requests==2.32.0.20241016
-types-setuptools==75.6.0.20241126
+types-setuptools==75.6.0.20241223
 types-toml==0.10.8.20240310
 types-typed-ast==1.5.8.7
 typing_extensions==4.12.2
