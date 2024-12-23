@@ -260,6 +260,17 @@ export const StyledStreamlitMarkdown =
 
         "p, ol, ul, dl, li": {
           fontSize: "inherit",
+
+          // Hide overflow of long Latex formulas that are inline with other text in
+          // `st.markdown` (e.g. `foo $very long latex formula$ bar`).
+          overflow: "hidden",
+        },
+
+        // Allow long Latex formulas that are not inline (i.e. either from `st.latex`
+        // or in their own paragraph inside `st.markdown`) to scroll horizontally.
+        ".katex-display": {
+          overflowX: "auto",
+          overflowY: "hidden",
         },
       }
     }
