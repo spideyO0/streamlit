@@ -179,12 +179,9 @@ export const StyledStreamlitMarkdown =
           isCaption
         ),
 
-        // If the markdown content is too wide for the page, make the Markdown block
-        // scroll horizontally. This is required a) for long inline Latex formulas and
-        // b) for long Latex formulas in `st.latex` when `help` is set.
-        // We could also use `"hidden"` here - then it would behave a bit more nicely
-        // but it might cut off some text.
-        overflowX: "auto",
+        // This is required so that long Latex formulas in `st.latex` are scrollable
+        // when `help` is set (see below).
+        overflowX: "hidden",
         overflowY: "hidden",
 
         p: {
