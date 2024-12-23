@@ -199,9 +199,6 @@ $$
 ax^2 + bx + c = 0
 $$
 
-Some text with latex inside $this is a very long formula this is a very long formula this is a very long formula
-this is a very long formula this is a very long formula$ and the text goes on.
-
 $$
 this is a very long formula this is a very long formula this is a very long formula
 this is a very long formula this is a very long formula
