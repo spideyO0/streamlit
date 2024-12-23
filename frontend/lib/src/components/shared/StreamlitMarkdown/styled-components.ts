@@ -182,7 +182,6 @@ export const StyledStreamlitMarkdown =
         // This is required so that long Latex formulas in `st.latex` are scrollable
         // when `help` is set (see below).
         overflowX: "hidden",
-        overflowY: "hidden",
 
         p: {
           wordBreak: "break-word",
