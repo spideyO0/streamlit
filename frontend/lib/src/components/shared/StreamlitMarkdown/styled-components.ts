@@ -167,6 +167,8 @@ export const StyledStreamlitMarkdown =
         (isLabel && !largerLabel) || isToast || isCaption
 
       return {
+        overflowX: "auto",
+        overflowY: "hidden",
         fontFamily: theme.genericFonts.bodyFont,
         fontSize: useSmallerFontSize ? theme.fontSizes.sm : theme.fontSizes.md,
         marginBottom: isLabel ? "" : `-${theme.spacing.lg}`,
