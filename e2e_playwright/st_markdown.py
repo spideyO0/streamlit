@@ -169,11 +169,6 @@ with st.container(key="latex_elements"):
         help="This is example tooltip displayed on latex.",
     )
 
-    st.latex(
-        "this is a very long formula this is a very long formula this is a very long "
-        "formula this is a very long formula this is a very long formula"
-    )
-
     try:
         import sympy
 
@@ -183,6 +178,11 @@ with st.container(key="latex_elements"):
         out = "a + b"
 
     st.latex(out)
+
+    st.latex(
+        "this is a very long formula this is a very long formula this is a very long "
+        "formula this is a very long formula this is a very long formula"
+    )
 
 
 st.markdown(

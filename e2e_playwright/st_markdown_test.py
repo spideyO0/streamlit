@@ -221,7 +221,7 @@ def test_latex_elements(themed_app: Page, assert_snapshot: ImageCompareFunction)
     latex_elements = get_element_by_key(themed_app, "latex_elements").get_by_test_id(
         "stMarkdown"
     )
-    expect(latex_elements).to_have_count(3)
+    expect(latex_elements).to_have_count(4)
 
     assert_snapshot(latex_elements.nth(0), name="st_latex-latex")
     expect(latex_elements.nth(0)).to_contain_text("LATE​X")
@@ -230,6 +230,9 @@ def test_latex_elements(themed_app: Page, assert_snapshot: ImageCompareFunction)
 
     expect(latex_elements.nth(2)).to_contain_text("a + b")
     assert_snapshot(latex_elements.nth(2), name="st_latex-sympy")
+
+    expect(latex_elements.nth(3)).to_contain_text("this is a very long formula")
+    assert_snapshot(latex_elements.nth(3), name="st_latex-long")
 
 
 def test_large_image_in_markdown(app: Page, assert_snapshot: ImageCompareFunction):
