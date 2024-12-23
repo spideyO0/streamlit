@@ -169,6 +169,11 @@ with st.container(key="latex_elements"):
         help="This is example tooltip displayed on latex.",
     )
 
+    st.latex(
+        "this is a very long formula this is a very long formula this is a very long "
+        "formula this is a very long formula this is a very long formula"
+    )
+
     try:
         import sympy
 
@@ -192,6 +197,14 @@ Inline math with $\KaTeX$
 
 $$
 ax^2 + bx + c = 0
+$$
+
+Some text with latex inside $this is a very long formula this is a very long formula this is a very long formula
+this is a very long formula this is a very long formula$ and the text goes on.
+
+$$
+this is a very long formula this is a very long formula this is a very long formula
+this is a very long formula this is a very long formula
 $$
 
 > This is a blockquote
