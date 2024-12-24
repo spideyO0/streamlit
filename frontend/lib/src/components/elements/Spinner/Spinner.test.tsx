@@ -78,4 +78,16 @@ describe("Spinner component", () => {
     expect(spinnerContainer).toHaveClass("stCacheSpinner")
     expect(spinnerContainer).toHaveStyle("paddingBottom: 1rem")
   })
+
+  it("shows timer when showElapsedTime is true", () => {
+    render(
+      <BaseProvider theme={LightTheme}>
+        <Spinner {...getProps({}, { showElapsedTime: true })} />
+      </BaseProvider>
+    )
+
+    const spinnerContainer = screen.getByTestId("stSpinner")
+    expect(spinnerContainer).toBeInTheDocument()
+    expect(screen.getByText("(0.0 seconds)")).toBeInTheDocument()
+  })
 })
