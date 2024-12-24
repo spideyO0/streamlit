@@ -26,8 +26,8 @@ import { LibContext } from "@streamlit/lib/src/components/core/LibContext"
 import {
   StyledSpinner,
   StyledSpinnerContainer,
-  ThemedStyledSpinner,
   StyledSpinnerTimer,
+  ThemedStyledSpinner,
 } from "./styled-components"
 
 export interface SpinnerProps {
