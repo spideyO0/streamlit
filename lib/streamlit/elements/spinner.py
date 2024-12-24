@@ -37,6 +37,16 @@ def spinner(
         A message to display while executing that block
     show_elapsed_time : bool
         If True, shows elapsed time next to the spinner text
+
+    Example
+    -------
+    >>> import time
+    >>> import streamlit as st
+    >>>
+    >>> with st.spinner("Wait for it..."):
+    >>>     time.sleep(5)
+    >>> st.success("Done!")
+
     """
     from streamlit.proto.Spinner_pb2 import Spinner as SpinnerProto
     from streamlit.string_util import clean_text
