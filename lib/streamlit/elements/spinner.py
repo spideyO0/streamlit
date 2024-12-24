@@ -29,19 +29,19 @@ def spinner(
     show_elapsed_time: bool = False,
     _cache: bool = False,
 ) -> Iterator[None]:
-    """Temporarily displays a message while executing a block of code.
+    """Display a loading spinner while executing a block of code.
 
     Parameters
     ----------
     text : str
-        A message to display while executing that block
+        The text to display next to the spinner. Defaults to "In progress...".
     show_elapsed_time : bool
-        If True, shows elapsed time next to the spinner text
+        Whether to show the elapsed time next to the spinner text. Defaults to False.
 
     Example
     -------
-    >>> import time
     >>> import streamlit as st
+    >>> import time
     >>>
     >>> with st.spinner("Wait for it...", show_elapsed_time=True):
     >>>     time.sleep(5)
