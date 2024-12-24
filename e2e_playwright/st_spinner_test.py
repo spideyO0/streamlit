@@ -33,7 +33,7 @@ def test_spinner_elapsed_time(app: Page):
     expect(app.get_by_test_id("stSpinner")).to_contain_text("seconds")
 
     # Similarly, we wait for 1 second and check that it shows 1.x seconds.
-    # TODO: Need to check in practice if this is flaky. 
+    # TODO: Need to check in practice if this is flaky.
     app.wait_for_timeout(1000)
     expect(app.get_by_test_id("stSpinner")).to_contain_text("1.")
     expect(app.get_by_test_id("stSpinner")).to_contain_text("seconds")
