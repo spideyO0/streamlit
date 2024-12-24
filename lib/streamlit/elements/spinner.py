@@ -23,24 +23,20 @@ from streamlit.runtime.scriptrunner import add_script_run_ctx
 
 
 @contextlib.contextmanager
-def spinner(text: str = "In progress...", *, _cache: bool = False) -> Iterator[None]:
+def spinner(
+    text: str = "In progress...",
+    *,
+    show_elapsed_time: bool = False,
+    _cache: bool = False,
+) -> Iterator[None]:
     """Temporarily displays a message while executing a block of code.
 
     Parameters
     ----------
     text : str
         A message to display while executing that block
-
-    Example
-    -------
-
-    >>> import time
-    >>> import streamlit as st
-    >>>
-    >>> with st.spinner('Wait for it...'):
-    >>>     time.sleep(5)
-    >>> st.success("Done!")
-
+    show_elapsed_time : bool
+        If True, shows elapsed time next to the spinner text
     """
     from streamlit.proto.Spinner_pb2 import Spinner as SpinnerProto
     from streamlit.string_util import clean_text
@@ -61,6 +57,7 @@ def spinner(text: str = "In progress...", *, _cache: bool = False) -> Iterator[N
                     spinner_proto = SpinnerProto()
                     spinner_proto.text = clean_text(text)
                     spinner_proto.cache = _cache
+                    spinner_proto.show_elapsed_time = show_elapsed_time
                     message._enqueue("spinner", spinner_proto)
 
         add_script_run_ctx(threading.Timer(DELAY_SECS, set_message)).start()
