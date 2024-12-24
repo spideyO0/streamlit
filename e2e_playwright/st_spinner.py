@@ -21,3 +21,7 @@ import streamlit as st
 if st.button("Run Spinner"):
     with st.spinner("Loading..."):
         time.sleep(2)
+
+if st.button("Run Spinner with Elapsed Time"):
+    with st.spinner("Loading...", show_elapsed_time=True):
+        time.sleep(2)
