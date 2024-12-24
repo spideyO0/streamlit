@@ -190,8 +190,8 @@ const Selectbox: React.FC<Props> = ({
                 onScroll: (offset: number) => {
                   setScrollPosition(offset)
                 },
-              }
-            }
+              },
+            },
           },
           ClearIcon: {
             props: {
