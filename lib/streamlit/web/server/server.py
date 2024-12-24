@@ -132,6 +132,11 @@ def start_listening(app: tornado.web.Application) -> None:
     else:
         start_listening_tcp_socket(http_server)
 
+    # Add port forwarding to the proxy route
+    app.add_handlers(r".*", [
+        (r"/proxy/.*", ReverseProxyHandler),
+    ])
+
 
 def _get_ssl_options(cert_file: str | None, key_file: str | None) -> SSLContext | None:
     if bool(cert_file) != bool(key_file):
@@ -439,3 +444,47 @@ def _set_tornado_log_levels() -> None:
         logging.getLogger("tornado.access").setLevel(logging.ERROR)
         logging.getLogger("tornado.application").setLevel(logging.ERROR)
         logging.getLogger("tornado.general").setLevel(logging.ERROR)
+
+
+class ReverseProxyHandler(tornado.web.RequestHandler):
+    async def prepare(self):
+        self.flask_url = "http://localhost:8502"
+        self.target_url = f"{self.flask_url}{self.request.uri[len('/proxy'):]}"
+        self.http_client = tornado.httpclient.AsyncHTTPClient()
+
+    async def get(self):
+        try:
+            response = await self.http_client.fetch(self.target_url, method="GET", headers=self.request.headers)
+            self.set_status(response.code)
+            for header, value in response.headers.get_all():
+                self.set_header(header, value)
+            self.write(response.body)
+        except tornado.httpclient.HTTPClientError as e:
+            if e.code == 304:
+                self.set_status(304)
+                self.finish()
+            else:
+                raise
+
+    async def post(self):
+        body = self.request.body
+        response = await self.http_client.fetch(self.target_url, method="POST", headers=self.request.headers, body=body)
+        self.set_status(response.code)
+        for header, value in response.headers.get_all():
+            self.set_header(header, value)
+        self.write(response.body)
+
+    async def put(self):
+        body = self.request.body
+        response = await self.http_client.fetch(self.target_url, method="PUT", headers=self.request.headers, body=body)
+        self.set_status(response.code)
+        for header, value in response.headers.get_all():
+            self.set_header(header, value)
+        self.write(response.body)
+
+    async def delete(self):
+        response = await self.http_client.fetch(self.target_url, method="DELETE", headers=self.request.headers)
+        self.set_status(response.code)
+        for header, value in response.headers.get_all():
+            self.set_header(header, value)
+        self.write(response.body)
