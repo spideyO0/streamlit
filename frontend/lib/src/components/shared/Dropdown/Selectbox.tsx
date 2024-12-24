@@ -91,6 +91,7 @@ const Selectbox: React.FC<Props> = ({
 }) => {
   const theme: EmotionTheme = useTheme()
   const [value, setValue] = useState<number | null>(propValue)
+  const [scrollPosition, setScrollPosition] = useState(0)
 
   // Update the value whenever the value provided by the props changes
   // TODO: Find a better way to handle this to prevent unneeded re-renders
@@ -181,7 +182,17 @@ const Selectbox: React.FC<Props> = ({
               lineHeight: theme.lineHeights.inputWidget,
             }),
           },
-          Dropdown: { component: VirtualDropdown },
+          Dropdown: {
+            component: VirtualDropdown,
+            props: {
+              $menuListProps: {
+                initialScrollOffset: scrollPosition,
+                onScroll: (offset: number) => {
+                  setScrollPosition(offset)
+                },
+              }
+            }
+          },
           ClearIcon: {
             props: {
               overrides: {
