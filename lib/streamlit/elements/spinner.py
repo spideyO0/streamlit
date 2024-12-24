@@ -43,7 +43,7 @@ def spinner(
     >>> import time
     >>> import streamlit as st
     >>>
-    >>> with st.spinner("Wait for it..."):
+    >>> with st.spinner("Wait for it...", show_elapsed_time=True):
     >>>     time.sleep(5)
     >>> st.success("Done!")
 
