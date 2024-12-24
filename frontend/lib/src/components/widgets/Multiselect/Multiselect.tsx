@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FC, memo, useCallback, useMemo } from "react"
+import React, { FC, memo, useCallback, useMemo, useState } from "react"
 
 import { ChevronDown } from "baseui/icon"
 import {
@@ -208,6 +208,8 @@ const Multiselect: FC<Props> = props => {
   // If that's true, we show the keyboard on mobile. If not, we hide it.
   const showKeyboardOnMobile = options.length > 10
 
+  const [scrollPosition, setScrollPosition] = useState(0)
+
   return (
     <div className="stMultiSelect" data-testid="stMultiSelect" style={style}>
       <WidgetLabel
@@ -370,7 +372,17 @@ const Multiselect: FC<Props> = props => {
                     : null,
               },
             },
-            Dropdown: { component: VirtualDropdown },
+            Dropdown: {
+              component: VirtualDropdown,
+              props: {
+                $menuListProps: {
+                  initialScrollOffset: scrollPosition,
+                  onScroll: (offset: number) => {
+                    setScrollPosition(offset)
+                  },
+                },
+              },
+            },
           }}
         />
       </StyledUISelect>
